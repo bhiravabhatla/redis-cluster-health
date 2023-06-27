@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-custom-exporter
+spec:
+  selector:
+    app: redis-custom-exporter
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: ClusterIP

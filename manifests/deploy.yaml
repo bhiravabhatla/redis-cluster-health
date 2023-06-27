@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-custom-exporter
+  labels:
+    app: redis-custom-exporter
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: redis-custom-exporter
+      labels:
+        app: redis-custom-exporter
+    spec:
+      serviceAccountName: endpoint-reader
+      containers:
+        - name: redis-custom-exporter
+          image: redis-custom-exporter:1.0.0
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: redis-password
+                  name: redis-cluster
+          imagePullPolicy: Never
+          command:
+            - /bin/sh
+            - -c
+            - /redis-cluster-health check -c redis-cluster -n default
+          ports:
+            - containerPort: 8080
+              name: metrics
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: redis-custom-exporter
+
